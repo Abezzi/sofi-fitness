@@ -6,15 +6,21 @@ import {
   Theme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { Stack } from "expo-router";
+import { Tabs } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as React from "react";
-import { Appearance, Platform, View } from "react-native";
+import { Appearance, Platform } from "react-native";
 import { NAV_THEME } from "~/lib/constants";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { PortalHost } from "@rn-primitives/portal";
 import { ThemeToggle } from "~/components/ThemeToggle";
 import { setAndroidNavigationBar } from "~/lib/android-navigation-bar";
+import {
+  BicepsFlexed,
+  Dumbbell,
+  LucideCalendar,
+  LucideHome,
+} from "lucide-react-native";
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -43,15 +49,55 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
       <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
-      <Stack>
-        <Stack.Screen
-          name="index"
+      <Tabs
+        screenOptions={{
+          headerTitle: "Sofi Fitness",
+          headerRight: () => <ThemeToggle />,
+          tabBarActiveTintColor: isDarkColorScheme ? "#fff" : "#000",
+          tabBarInactiveTintColor: isDarkColorScheme ? "#888" : "#666",
+        }}
+      >
+        <Tabs.Screen
+          name="(tabs)/index"
           options={{
-            title: "Sofi Fitness",
-            headerRight: () => <ThemeToggle />,
+            title: "Home",
+            tabBarLabel: "Home",
+            tabBarIcon: ({ color, size }) => (
+              <LucideHome size={size} color={color} />
+            ),
           }}
         />
-      </Stack>
+        <Tabs.Screen
+          name="(tabs)/exercise"
+          options={{
+            title: "Exercises",
+            tabBarLabel: "Exercises",
+            tabBarIcon: ({ color, size }) => (
+              <Dumbbell size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="(tabs)/workout"
+          options={{
+            title: "Workout",
+            tabBarLabel: "Workout",
+            tabBarIcon: ({ color, size }) => (
+              <BicepsFlexed size={size} color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="(tabs)/calendar"
+          options={{
+            title: "Calendar",
+            tabBarLabel: "Calendar",
+            tabBarIcon: ({ color, size }) => (
+              <LucideCalendar size={size} color={color} />
+            ),
+          }}
+        />
+      </Tabs>
       <PortalHost />
     </ThemeProvider>
   );
@@ -75,4 +121,4 @@ function useSetAndroidNavigationBar() {
   }, []);
 }
 
-function noop() { }
+function noop() {}

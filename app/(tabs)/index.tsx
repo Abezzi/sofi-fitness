@@ -48,7 +48,7 @@ export default function Screen() {
             </AvatarFallback>
           </Avatar>
           <View className="p-3" />
-          <CardTitle className="pb-2 text-center">Rick Sanchez</CardTitle>
+          <CardTitle className="pb-2 text-center">sofi ojeda</CardTitle>
           <View className="flex-row">
             <CardDescription className="text-base font-semibold">
               Scientist
