@@ -31,7 +31,7 @@ export default function Screen() {
   const [progress, setProgress] = React.useState(78);
 
   function handleSoundTest() {
-    console.log("testing sound");
+    console.log("testinsound");
   }
 
   function updateProgressValue() {
