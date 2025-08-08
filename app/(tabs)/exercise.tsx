@@ -14,6 +14,7 @@ export default function Screen() {
       <Button onPress={handleGoToCategory}>
         <Text>go to category</Text>
       </Button>
+      <Text>here should i have a list of exercises : )</Text>
     </View>
   );
 }

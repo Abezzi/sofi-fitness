@@ -50,17 +50,23 @@ export default function RootLayout() {
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
       <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
       <Stack>
-        {/* Tabs group for tab navigation */}
         <Stack.Screen
           name="(tabs)"
           options={{ headerShown: false }} // Hide header for tabs
         />
-        {/* Category as a separate stack screen */}
         <Stack.Screen
           name="category"
           options={{
             title: "Category",
             headerTitle: "Category",
+            headerRight: () => <ThemeToggle />,
+          }}
+        />
+        <Stack.Screen
+          name="categories/[id]"
+          options={{
+            title: "Category Details",
+            headerTitle: "Category Details",
             headerRight: () => <ThemeToggle />,
           }}
         />
