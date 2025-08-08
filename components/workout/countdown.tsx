@@ -44,7 +44,7 @@ const Countdown = ({ time, title, next }: CountdownPropsType) => {
   let player1 = useAudioPlayer(
     require("../../assets/audio/countdown/esMX/male/1.mp3"),
   );
-  let infoSound = useAudioPlayer("../../assets/audio/info.mp3");
+  let infoSound = useAudioPlayer(require("../../assets/audio/info.mp3"));
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -83,7 +83,7 @@ const Countdown = ({ time, title, next }: CountdownPropsType) => {
     } else if (timeLeft == 1) {
       player1.seekTo(0);
       player1.play();
-    } else if (timeLeft < 1) {
+    } else if (timeLeft == 0) {
       infoSound.seekTo(0);
       infoSound.play();
     }
