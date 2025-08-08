@@ -1,4 +1,6 @@
 import "~/global.css";
+import * as SQLite from "expo-sqlite";
+import { drizzle } from "drizzle-orm/expo-sqlite";
 
 import {
   DarkTheme,
@@ -16,6 +18,8 @@ import { PortalHost } from "@rn-primitives/portal";
 import { ThemeToggle } from "~/components/ThemeToggle";
 import { setAndroidNavigationBar } from "~/lib/android-navigation-bar";
 
+const expo = SQLite.openDatabaseSync("db.db");
+const db = drizzle(expo);
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
   colors: NAV_THEME.light,
