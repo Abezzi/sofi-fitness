@@ -6,7 +6,7 @@ import {
   Theme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { Tabs, Stack } from "expo-router";
+import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as React from "react";
 import { Appearance, Platform } from "react-native";
@@ -15,12 +15,6 @@ import { useColorScheme } from "~/lib/useColorScheme";
 import { PortalHost } from "@rn-primitives/portal";
 import { ThemeToggle } from "~/components/ThemeToggle";
 import { setAndroidNavigationBar } from "~/lib/android-navigation-bar";
-import {
-  BicepsFlexed,
-  Dumbbell,
-  LucideCalendar,
-  LucideHome,
-} from "lucide-react-native";
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -50,10 +44,7 @@ export default function RootLayout() {
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
       <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
       <Stack>
-        <Stack.Screen
-          name="(tabs)"
-          options={{ headerShown: false }} // Hide header for tabs
-        />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen
           name="category"
           options={{
@@ -83,7 +74,7 @@ const useIsomorphicLayoutEffect =
 
 function useSetWebBackgroundClassName() {
   useIsomorphicLayoutEffect(() => {
-    // Adds the background color to the html element to prevent white background on overscroll.
+    // adds the background color to the html element to prevent white background on overscroll.
     document.documentElement.classList.add("bg-background");
   }, []);
 }
