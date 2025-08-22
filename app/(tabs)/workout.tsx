@@ -6,7 +6,7 @@ export default function Screen() {
   return (
     <>
       <TotalProgress />
-      <Countdown time={70} title="Bicep Curls" next="Pull Ups" />
+      <Countdown time={10} title="Bicep Curls" next="Pull Ups" />
       <Routine />
     </>
   );

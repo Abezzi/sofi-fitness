@@ -1,12 +1,30 @@
 import { View } from "react-native";
+import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { CategoryList } from "~/components/category/category-list";
 import { useRouter } from "expo-router";
+import { useSQLiteContext } from "expo-sqlite";
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import * as schema from "~/db/schema";
+import { useEffect, useState } from "react";
+import { Category } from "~/db/schema";
 
 export default function Screen() {
   const router = useRouter();
+  const [data, setData] = useState<Category[]>([]);
 
   //TODO: SQL queries
+  const db = useSQLiteContext();
+  const drizzleDb = drizzle(db, { schema });
+
+  useEffect(() => {
+    const load = async () => {
+      const data = await drizzleDb.query.category.findMany();
+      console.log("data: ", data);
+      setData(data);
+    };
+    load();
+  }, []);
 
   const categories = [
     { id: "1", name: "Cardio", color: "#FFFF00" },
@@ -32,8 +50,19 @@ export default function Screen() {
     router.push(`/categories/${category.id}`);
   };
 
+  function handleCreateNewCategory() {
+    router.push(`/categories/new-category`);
+  }
+
   return (
     <View>
+      <Button
+        variant="outline"
+        className="shadow shadow-foreground/5"
+        onPress={handleCreateNewCategory}
+      >
+        <Text>asd</Text>
+      </Button>
       <Text>SANDIA category screen</Text>
       <Text>SANDIA here should have a list of categories</Text>
       <CategoryList
