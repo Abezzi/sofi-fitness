@@ -11,7 +11,8 @@ import {
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as React from "react";
-import { ActivityIndicator, Appearance, Platform } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Appearance, Platform, View } from "react-native";
 import { NAV_THEME } from "~/lib/constants";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { PortalHost } from "@rn-primitives/portal";
@@ -19,8 +20,10 @@ import { ThemeToggle } from "~/components/ThemeToggle";
 import { setAndroidNavigationBar } from "~/lib/android-navigation-bar";
 import { Suspense } from "react";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import migrations from "../drizzle/migrations"; // TODO: ??
-export const DATABASE_NAME = "sf_db";
+import migrations from "~/drizzle/migrations"; // TODO: ??
+import { Text } from "~/components/ui/text";
+import { initializeDatabase } from "~/db/logic";
+export const DATABASE_NAME = "db.db";
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -45,14 +48,36 @@ const usePlatformSpecificSetup = Platform.select({
 export default function RootLayout() {
   usePlatformSpecificSetup();
   const { isDarkColorScheme } = useColorScheme();
+
+  // db stuff
+  initializeDatabase();
   const expoDb = openDatabaseSync(DATABASE_NAME, {
     enableChangeListener: true,
   });
   const db = drizzle(expoDb);
   const { success, error } = useMigrations(db, migrations);
 
-  console.log(success);
-  console.log(error);
+  useEffect(() => {
+    if (!success) return;
+  }, [success]);
+
+  if (error) {
+    return (
+      <View>
+        <Text>migration error: {error.message}</Text>
+        <Text>migration error: {error.message}</Text>
+        <Text>migration error: {error.message}</Text>
+      </View>
+    );
+  }
+
+  if (!success) {
+    return (
+      <View>
+        <Text>Migration is in progress...</Text>
+      </View>
+    );
+  }
 
   return (
     <Suspense fallback={<ActivityIndicator size="large" />}>
@@ -107,4 +132,4 @@ function useSetAndroidNavigationBar() {
   }, []);
 }
 
-function noop() { }
+function noop() {}

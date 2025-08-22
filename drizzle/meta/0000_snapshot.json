@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "49670cf5-9f9e-4a75-91e8-1947b3d4f382",
+  "id": "307b7203-f6da-41be-b692-cf709010d6f9",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "category": {
@@ -25,7 +25,7 @@
           "name": "color",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         }
       },
