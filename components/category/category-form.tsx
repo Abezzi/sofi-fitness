@@ -1,7 +1,7 @@
 import { Input } from "~/components/ui/input";
 import { Save } from "lucide-react-native";
 import { Label } from "~/components/ui/label";
-import React from "react";
+import React, { useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { useColorScheme } from "~/lib/useColorScheme";
 import {
@@ -20,6 +20,23 @@ type Category = {
 };
 
 export function CategoryForm() {
+  const [category, setCategory] = useState<Category>({
+    id: "",
+    name: "name",
+    color: "",
+  });
+
+  const handleInputChange = (field: keyof Category, value: string) => {
+    setCategory((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmit = () => {
+    if (!category.name || !category.color) return;
+  };
+
   return (
     <View className="flex-1 items-center gap-5 p-6 bg-secondary/30">
       <Card className="w-full max-w-sm p-6 rounded-2xl">
@@ -37,6 +54,10 @@ export function CategoryForm() {
             placeholder="Category Name..."
             aria-labelledby="categoryName"
             aria-errormessage="inputError"
+            value={category.name}
+            onChangeText={(categoryName) =>
+              handleInputChange("name", categoryName)
+            }
           />
 
           <Label nativeID="categoryColor">Color</Label>
@@ -44,6 +65,10 @@ export function CategoryForm() {
             placeholder="Category Color..."
             aria-labelledby="categoryColor"
             aria-errormessage="inputError"
+            value={category.color}
+            onChangeText={(categoryColor) =>
+              handleInputChange("color", categoryColor)
+            }
           />
         </CardContent>
         <CardFooter className="flex-col gap-3 pb-0">
@@ -61,6 +86,8 @@ export function CategoryForm() {
           </View>
         </CardFooter>
       </Card>
+      <Text>{category.name}</Text>
+      <Text>{category.color}</Text>
     </View>
   );
 }

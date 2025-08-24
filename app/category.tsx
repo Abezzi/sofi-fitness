@@ -61,7 +61,7 @@ export default function Screen() {
         className="shadow shadow-foreground/5"
         onPress={handleCreateNewCategory}
       >
-        <Text>asd</Text>
+        <Text>New Category</Text>
       </Button>
       <Text>SANDIA category screen</Text>
       <Text>SANDIA here should have a list of categories</Text>
