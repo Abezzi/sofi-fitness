@@ -20,10 +20,9 @@ import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "~/drizzle/migrations"; // TODO: ??
 import { Text } from "~/components/ui/text";
 import { initializeDatabase, resetDatabase } from "~/db/logic";
-import * as schema from "db/schema";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import MainStack from "~/navigator/main-stack";
-export const DATABASE_NAME = "db.db";
+import { DATABASE_NAME, db, expoDb } from "~/db";
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -48,12 +47,8 @@ const usePlatformSpecificSetup = Platform.select({
 function DatabaseInitializer() {
   // resetDatabase(); // DEBUG: resets db
   initializeDatabase();
-  const expoDb = openDatabaseSync(DATABASE_NAME, {
-    enableChangeListener: true,
-  });
-  const db = drizzle(expoDb, { schema });
-  useDrizzleStudio(expoDb);
   const { success, error } = useMigrations(db, migrations);
+  useDrizzleStudio(expoDb);
 
   useEffect(() => {
     if (success) {
@@ -77,7 +72,6 @@ function DatabaseInitializer() {
       </View>
     );
   }
-
   return null;
 }
 
