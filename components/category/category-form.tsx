@@ -1,5 +1,6 @@
 import { Input } from "~/components/ui/input";
-import { AlertCircleIcon, Save } from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { AlertCircleIcon, Loader2, Save } from "lucide-react-native";
 import { Label } from "~/components/ui/label";
 import React, { useState } from "react";
 import { Pressable, Text, View } from "react-native";
@@ -13,6 +14,8 @@ import {
 } from "~/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { postCategory } from "~/db/queries/category.queries";
+import { Button } from "../ui/button";
+import { Icon } from "../ui/icon";
 
 type Category = {
   id: number;
@@ -22,6 +25,7 @@ type Category = {
 
 export function CategoryForm() {
   const [showAlert, setShowAlert] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [category, setCategory] = useState<Category>({
     id: 0,
     name: "",
@@ -35,16 +39,29 @@ export function CategoryForm() {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setLoading(true);
+
     if (!category.name || !category.color) {
       setShowAlert(true);
+      setLoading(false);
+      return;
     }
 
     // POST category into db
-    postCategory(category);
-    console.log("submit");
-    setShowAlert(false);
+    const postSuccess = await postCategory(category);
+    if (postSuccess) {
+      setShowAlert(false);
+      setLoading(false);
+      const router = useRouter();
+      router.navigate("/category");
+      return;
+    } else {
+      // console.log("something happened");
+    }
 
+    setShowAlert(true);
+    setLoading(false);
     return;
   };
 
@@ -83,20 +100,19 @@ export function CategoryForm() {
           />
         </CardContent>
         <CardFooter className="flex-col gap-3 pb-0">
-          <Pressable onPress={handleSubmit}>
-            <View className="flex-row items-center overflow-hidden">
-              <Save color="#FF0000" />
-              <Text
-                style={{
-                  color: "#FF0000",
-                  fontSize: 24,
-                  fontWeight: "500",
-                }}
-              >
-                CREATE
-              </Text>
-            </View>
-          </Pressable>
+          {loading ? (
+            <Button disabled>
+              <View className="pointer-events-none animate-spin">
+                <Icon as={Loader2} className="text-primary-foreground" />
+              </View>
+              <Text>Please wait</Text>
+            </Button>
+          ) : (
+            <Button onPress={handleSubmit}>
+              <Icon as={Save} className="text-primary-foreground" />
+              <Text>Create</Text>
+            </Button>
+          )}
         </CardFooter>
       </Card>
       {showAlert && (
