@@ -8,15 +8,12 @@ import {
   Theme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ActivityIndicator, Appearance, Platform, View } from "react-native";
 import { NAV_THEME } from "~/lib/constants";
 import { useColorScheme } from "~/lib/useColorScheme";
 import { PortalHost } from "@rn-primitives/portal";
-import { ThemeToggle } from "~/components/ThemeToggle";
 import { setAndroidNavigationBar } from "~/lib/android-navigation-bar";
 import { Suspense } from "react";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
@@ -25,6 +22,7 @@ import { Text } from "~/components/ui/text";
 import { initializeDatabase, resetDatabase } from "~/db/logic";
 import * as schema from "db/schema";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
+import MainStack from "~/navigator/main-stack";
 export const DATABASE_NAME = "db.db";
 
 const LIGHT_THEME: Theme = {
@@ -96,27 +94,8 @@ export default function RootLayout() {
       >
         <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
           <DatabaseInitializer />
-          <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="category"
-              options={{
-                title: "Category",
-                headerTitle: "Category",
-                headerRight: () => <ThemeToggle />,
-              }}
-            />
-            <Stack.Screen
-              name="categories/[id]"
-              options={{
-                title: "Category Details",
-                headerTitle: "Category Details",
-                headerRight: () => <ThemeToggle />,
-              }}
-            />
-          </Stack>
           <PortalHost />
+          <MainStack />
         </ThemeProvider>
       </SQLiteProvider>
     </Suspense>
