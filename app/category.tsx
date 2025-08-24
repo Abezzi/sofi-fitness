@@ -8,6 +8,7 @@ import { drizzle } from "drizzle-orm/expo-sqlite";
 import * as schema from "~/db/schema";
 import { useEffect, useState } from "react";
 import { Category } from "~/db/schema";
+import { getAllCategories } from "~/db/queries/category.queries";
 
 export default function Screen() {
   const router = useRouter();
@@ -16,34 +17,18 @@ export default function Screen() {
   //TODO: SQL queries
   const db = useSQLiteContext();
   const drizzleDb = drizzle(db, { schema });
+  let categories: Category[];
 
   useEffect(() => {
     const load = async () => {
-      const data = await drizzleDb.query.category.findMany();
-      console.log("data: ", data);
-      setData(data);
+      categories = await getAllCategories();
+      setData(categories);
     };
     load();
   }, []);
 
-  const categories = [
-    { id: "1", name: "Cardio", color: "#FFFF00" },
-    { id: "2", name: "Back", color: "#FF00FF" },
-    { id: "3", name: "Flexibility", color: "#00FFFF" },
-    { id: "4", name: "Legs", color: "#F0FFAF" },
-    { id: "5", name: "Forearm", color: "#F12F9F" },
-    { id: "6", name: "Bicep", color: "#FFFFFF" },
-    { id: "7", name: "Chest", color: "#FFFF5F" },
-    { id: "8", name: "Tricep", color: "#FABFFF" },
-    { id: "9", name: "Core", color: "#FFFFFF" },
-    { id: "10", name: "Balance", color: "#FFCCFF" },
-    { id: "11", name: "dr k", color: "#0FFFDA" },
-    { id: "12", name: "dr k", color: "#FF0FF1" },
-    { id: "13", name: "dr k", color: "#FFEEAA" },
-  ];
-
   const handleCategoryPress = (category: {
-    id: string;
+    id: number;
     name: string;
     color: string;
   }) => {
@@ -63,12 +48,7 @@ export default function Screen() {
       >
         <Text>New Category</Text>
       </Button>
-      <Text>SANDIA category screen</Text>
-      <Text>SANDIA here should have a list of categories</Text>
-      <CategoryList
-        categories={categories}
-        onCategoryPress={handleCategoryPress}
-      />
+      <CategoryList categories={data} onCategoryPress={handleCategoryPress} />
     </View>
   );
 }

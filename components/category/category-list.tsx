@@ -1,12 +1,7 @@
 import React from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { useColorScheme } from "~/lib/useColorScheme";
-
-type Category = {
-  id: string;
-  name: string;
-  color: string;
-};
+import { Category } from "~/db/schema";
 
 type CategoryListProps = {
   categories: Category[];
@@ -61,7 +56,7 @@ export function CategoryList({
     <FlatList
       data={categories}
       renderItem={renderItem}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => item.id.toString()}
       contentContainerStyle={styles.listContainer}
     />
   );
