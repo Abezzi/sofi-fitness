@@ -11,8 +11,8 @@ const db = drizzle(expo);
 // Checks to see if there is any data in database with a count in userList
 export async function checkDatabaseState() {
   try {
-    const count = await db.$count(usersTable);
-    console.log(`Current users in the database: ${count}`);
+    const count = await db.$count(category);
+    console.log(`Current categories in the database: ${count}`);
   } catch (error) {
     console.error("Error checking database state:", error);
   }
@@ -21,15 +21,21 @@ export async function checkDatabaseState() {
 // Initializes the database and creates the table if it doesn't exist
 export async function initializeDatabase() {
   try {
-    await db.run(`
-      CREATE TABLE IF NOT EXISTS category (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        color TEXT NOT NULL UNIQUE
-      )
-    `);
+    // Use runAsync instead of execAsync for PRAGMA
+    await expo.runAsync("PRAGMA foreign_keys = ON;");
     console.log("Database initialized successfully.");
   } catch (error) {
     console.error("Error initializing database:", error);
+    throw error; // Re-throw to ensure the error is visible in the app
+  }
+}
+
+// Temporary: Reset database for debugging
+export async function resetDatabase() {
+  try {
+    await expo.runAsync("DROP TABLE IF EXISTS category;");
+    console.log("Database reset successfully.");
+  } catch (error) {
+    console.error("Error resetting database:", error);
   }
 }

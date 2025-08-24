@@ -22,7 +22,9 @@ import { Suspense } from "react";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "~/drizzle/migrations"; // TODO: ??
 import { Text } from "~/components/ui/text";
-import { initializeDatabase } from "~/db/logic";
+import { initializeDatabase, resetDatabase } from "~/db/logic";
+import * as schema from "db/schema";
+import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 export const DATABASE_NAME = "db.db";
 
 const LIGHT_THEME: Theme = {
@@ -45,28 +47,27 @@ const usePlatformSpecificSetup = Platform.select({
   default: noop,
 });
 
-export default function RootLayout() {
-  usePlatformSpecificSetup();
-  const { isDarkColorScheme } = useColorScheme();
-
-  // db stuff
+function DatabaseInitializer() {
+  // resetDatabase(); // DEBUG: resets db
   initializeDatabase();
   const expoDb = openDatabaseSync(DATABASE_NAME, {
     enableChangeListener: true,
   });
-  const db = drizzle(expoDb);
+  const db = drizzle(expoDb, { schema });
+  useDrizzleStudio(expoDb);
   const { success, error } = useMigrations(db, migrations);
 
   useEffect(() => {
-    if (!success) return;
+    if (success) {
+      console.log("Migrations applied successfully");
+    }
   }, [success]);
 
   if (error) {
+    console.error("Migration error details:", error);
     return (
       <View>
-        <Text>migration error: {error.message}</Text>
-        <Text>migration error: {error.message}</Text>
-        <Text>migration error: {error.message}</Text>
+        <Text>migration error: {JSON.stringify(error, null, 2)}</Text>
       </View>
     );
   }
@@ -79,14 +80,22 @@ export default function RootLayout() {
     );
   }
 
+  return null;
+}
+
+export default function RootLayout() {
+  usePlatformSpecificSetup();
+  const { isDarkColorScheme } = useColorScheme();
+
   return (
     <Suspense fallback={<ActivityIndicator size="large" />}>
-      <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-        <SQLiteProvider
-          databaseName={DATABASE_NAME}
-          options={{ enableChangeListener: true }}
-          useSuspense
-        >
+      <SQLiteProvider
+        databaseName={DATABASE_NAME}
+        options={{ enableChangeListener: true }}
+        useSuspense
+      >
+        <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
+          <DatabaseInitializer />
           <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
@@ -108,8 +117,8 @@ export default function RootLayout() {
             />
           </Stack>
           <PortalHost />
-        </SQLiteProvider>
-      </ThemeProvider>
+        </ThemeProvider>
+      </SQLiteProvider>
     </Suspense>
   );
 }
@@ -132,4 +141,4 @@ function useSetAndroidNavigationBar() {
   }, []);
 }
 
-function noop() {}
+function noop() { }
