@@ -1,9 +1,8 @@
 import { Input } from "~/components/ui/input";
-import { Save } from "lucide-react-native";
+import { AlertCircleIcon, Save } from "lucide-react-native";
 import { Label } from "~/components/ui/label";
 import React, { useState } from "react";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
-import { useColorScheme } from "~/lib/useColorScheme";
+import { Pressable, Text, View } from "react-native";
 import {
   Card,
   CardContent,
@@ -12,17 +11,20 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { postCategory } from "~/db/queries/category.queries";
 
 type Category = {
-  id: string;
+  id: number;
   name: string;
   color: string;
 };
 
 export function CategoryForm() {
+  const [showAlert, setShowAlert] = useState(false);
   const [category, setCategory] = useState<Category>({
-    id: "",
-    name: "name",
+    id: 0,
+    name: "",
     color: "",
   });
 
@@ -34,7 +36,16 @@ export function CategoryForm() {
   };
 
   const handleSubmit = () => {
-    if (!category.name || !category.color) return;
+    if (!category.name || !category.color) {
+      setShowAlert(true);
+    }
+
+    // POST category into db
+    postCategory(category);
+    console.log("submit");
+    setShowAlert(false);
+
+    return;
   };
 
   return (
@@ -72,22 +83,41 @@ export function CategoryForm() {
           />
         </CardContent>
         <CardFooter className="flex-col gap-3 pb-0">
-          <View className="flex-row items-center overflow-hidden">
-            <Save color="#FF0000" />
-            <Text
-              style={{
-                color: "#FF0000",
-                fontSize: 24,
-                fontWeight: "500",
-              }}
-            >
-              CREATE
-            </Text>
-          </View>
+          <Pressable onPress={handleSubmit}>
+            <View className="flex-row items-center overflow-hidden">
+              <Save color="#FF0000" />
+              <Text
+                style={{
+                  color: "#FF0000",
+                  fontSize: 24,
+                  fontWeight: "500",
+                }}
+              >
+                CREATE
+              </Text>
+            </View>
+          </Pressable>
         </CardFooter>
       </Card>
-      <Text>{category.name}</Text>
-      <Text>{category.color}</Text>
+      {showAlert && (
+        <View className="w-full max-w-xl gap-4">
+          <Alert variant="destructive" icon={AlertCircleIcon}>
+            <AlertTitle>Unable to create your category.</AlertTitle>
+            <AlertDescription>
+              Please verify the fields and try again.
+            </AlertDescription>
+            <View role="list" className="ml-0.5 pb-2 pl-6">
+              <Text role="listitem" className="text-sm text-red-500">
+                <Text className="web:pr-2">•</Text> Check name
+              </Text>
+              <Text role="listitem" className="text-sm text-red-500">
+                <Text className="web:pr-2">•</Text> Ensure color field is not
+                empty
+              </Text>
+            </View>
+          </Alert>
+        </View>
+      )}
     </View>
   );
 }
