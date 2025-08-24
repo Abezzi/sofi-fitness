@@ -17,7 +17,7 @@ import { PortalHost } from "@rn-primitives/portal";
 import { setAndroidNavigationBar } from "~/lib/android-navigation-bar";
 import { Suspense } from "react";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import migrations from "~/drizzle/migrations"; // TODO: ??
+import migrations from "~/drizzle/migrations";
 import { Text } from "~/components/ui/text";
 import { initializeDatabase, resetDatabase } from "~/db/logic";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
