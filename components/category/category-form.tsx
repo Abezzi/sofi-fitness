@@ -16,6 +16,7 @@ import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { postCategory } from "~/db/queries/category.queries";
 import { Button } from "../ui/button";
 import { Icon } from "../ui/icon";
+import ColorPickerCustom from "../base/color-picker-custom";
 
 type Category = {
   id: number;
@@ -87,16 +88,10 @@ export function CategoryForm() {
               handleInputChange("name", categoryName)
             }
           />
-
           <Label nativeID="categoryColor">Color</Label>
-          <Input
-            placeholder="Category Color..."
-            aria-labelledby="categoryColor"
-            aria-errormessage="inputError"
-            value={category.color}
-            onChangeText={(categoryColor) =>
-              handleInputChange("color", categoryColor)
-            }
+          <ColorPickerCustom
+            onColorSelect={(color) => handleInputChange("color", color)}
+            initialColor={category.color || "#FFFFFF"}
           />
         </CardContent>
         <CardFooter className="flex-col gap-3 pb-0">
