@@ -7,7 +7,7 @@ import ColorPicker, {
   PreviewText,
 } from "reanimated-color-picker";
 import { View } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface ColorPickerCustomProps {
   onColorSelect: (color: string) => void;
@@ -24,6 +24,10 @@ export default function ColorPickerCustom({
 }: ColorPickerCustomProps) {
   const [resultColor, setResultColor] = useState(initialColor);
   const currentColor = useSharedValue(initialColor);
+
+  useEffect(() => {
+    setResultColor(initialColor);
+  }, [onColorSelect]);
 
   const onColorChange = (color: ColorFormatsObject) => {
     "worklet";
