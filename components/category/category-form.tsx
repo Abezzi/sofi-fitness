@@ -77,7 +77,7 @@ export function CategoryForm() {
             </CardDescription>
           </View>
         </CardHeader>
-        <CardContent className="text-base font-semibold ">
+        <CardContent className="text-base font-semibold">
           <Label nativeID="categoryName">Category</Label>
           <Input
             placeholder="Category Name..."
@@ -88,7 +88,9 @@ export function CategoryForm() {
               handleInputChange("name", categoryName)
             }
           />
-          <Label nativeID="categoryColor">Color</Label>
+          <Label nativeID="categoryColor" className="pt-2">
+            Color
+          </Label>
           <ColorPickerCustom
             onColorSelect={(color) => handleInputChange("color", color)}
             initialColor={category.color || "#FFFFFF"}
