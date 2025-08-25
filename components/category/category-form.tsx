@@ -3,7 +3,7 @@ import { useRouter } from "expo-router";
 import { AlertCircleIcon, Loader2, Save } from "lucide-react-native";
 import { Label } from "~/components/ui/label";
 import React, { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import {
   Card,
   CardContent,
