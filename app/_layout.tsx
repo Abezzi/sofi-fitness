@@ -94,8 +94,8 @@ export default function RootLayout() {
       >
         <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
           <DatabaseInitializer />
-          <PortalHost />
           <MainStack />
+          <PortalHost />
         </ThemeProvider>
       </SQLiteProvider>
     </Suspense>

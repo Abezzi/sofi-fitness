@@ -2,8 +2,8 @@ import { Input } from "~/components/ui/input";
 import { useRouter } from "expo-router";
 import { AlertCircleIcon, Loader2, Save } from "lucide-react-native";
 import { Label } from "~/components/ui/label";
-import React, { useState } from "react";
-import { Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Platform, Text, View } from "react-native";
 import {
   Card,
   CardContent,
@@ -13,13 +13,33 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
-import { postCategory } from "~/db/queries/category.queries";
+import { getAllCategories, postCategory } from "~/db/queries/category.queries";
 import { Button } from "../ui/button";
 import { Icon } from "../ui/icon";
 import ColorPickerCustom from "../base/color-picker-custom";
-import { Exercise } from "~/db/schema/";
+import { Exercise, ExerciseType } from "~/db/schema/";
+import { Category } from "~/db/schema/";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { getAllExerciseType } from "~/db/queries/exercise_type.queries";
 
 export function ExerciseForm() {
+  const insets = useSafeAreaInsets();
+  const contentInsets = {
+    top: insets.top,
+    bottom: Platform.select({
+      ios: insets.bottom,
+      android: insets.bottom + 24,
+    }),
+  };
   const [showAlert, setShowAlert] = useState(false);
   const [loading, setLoading] = useState(false);
   const [exercise, setExercise] = useState<Exercise>({
@@ -30,7 +50,25 @@ export function ExerciseForm() {
     exerciseTypeId: 0,
   });
 
-  const handleInputChange = (field: keyof Exercise, value: string) => {
+  const [categoriesData, setCategoriesData] = useState<Category[]>([]);
+  const [exerciseTypesData, setExerciseTypesData] = useState<ExerciseType[]>(
+    [],
+  );
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      let categories: Category[] = await getAllCategories();
+      setCategoriesData(categories);
+    };
+    const loadTypes = async () => {
+      let exerciseTypes: ExerciseType[] = await getAllExerciseType();
+      setExerciseTypesData(exerciseTypes);
+    };
+    loadCategories();
+    loadTypes();
+  }, []);
+
+  const handleInputChange = (field: keyof Exercise, value: string | number) => {
     setExercise((prev) => ({
       ...prev,
       [field]: value,
@@ -86,8 +124,11 @@ export function ExerciseForm() {
               handleInputChange("name", exerciseName)
             }
           />
+
           {/*description*/}
-          <Label nativeID="exerciseDescription">Description</Label>
+          <Label className="pt-2" nativeID="exerciseDescription">
+            Description
+          </Label>
           <Input
             placeholder="Description..."
             aria-labelledby="exerciseDescription"
@@ -97,6 +138,90 @@ export function ExerciseForm() {
               handleInputChange("description", exerciseDescription)
             }
           />
+
+          {/*categoryId*/}
+          <Label className="pt-2" nativeID="exerciseCategoryId">
+            Category
+          </Label>
+          <Select
+            value={{
+              label:
+                categoriesData.find((cat) => cat.id === exercise.categoryId)
+                  ?.name || "Select a category...",
+              value: exercise.categoryId.toString(),
+            }}
+            onValueChange={(option) => {
+              if (option) {
+                handleInputChange("categoryId", parseInt(option.value, 10));
+              } else {
+                handleInputChange("categoryId", 0);
+              }
+            }}
+          >
+            <SelectTrigger className="h-12">
+              <SelectValue
+                placeholder="Select a Category"
+                className={`text-lg ${exercise.categoryId === 0 ? "text-muted-foreground" : ""}`}
+              />
+            </SelectTrigger>
+            <SelectContent insets={contentInsets} className="">
+              <SelectGroup>
+                <SelectLabel className="text-lg">Categories</SelectLabel>
+                {categoriesData.map((category) => (
+                  <SelectItem
+                    key={category.id}
+                    label={category.name}
+                    value={category.id.toString()}
+                    className="text-lg"
+                  >
+                    {category.name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
+          {/*exerciseTypeId*/}
+          <Label className="pt-2" nativeID="exerciseTypeId">
+            Type
+          </Label>
+          <Select
+            value={{
+              label:
+                exerciseTypesData.find(
+                  (et) => et.id === exercise.exerciseTypeId,
+                )?.name || "Select an exercise type...",
+              value: exercise.exerciseTypeId.toString(),
+            }}
+            onValueChange={(option) => {
+              if (option) {
+                handleInputChange("exerciseTypeId", parseInt(option.value, 10));
+              } else {
+                handleInputChange("exerciseTypeId", 0);
+              }
+            }}
+          >
+            <SelectTrigger className="h-12">
+              <SelectValue
+                placeholder="Select a Type"
+                className={`text-lg ${exercise.exerciseTypeId === 0 ? "text-muted-foreground" : ""}`}
+              />
+            </SelectTrigger>
+            <SelectContent insets={contentInsets} className="">
+              <SelectGroup>
+                <SelectLabel>Types</SelectLabel>
+                {exerciseTypesData.map((exerciseType) => (
+                  <SelectItem
+                    key={exerciseType.id}
+                    label={exerciseType.name}
+                    value={exerciseType.id.toString()}
+                  >
+                    {exerciseType.name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </CardContent>
         <CardFooter className="flex-col gap-3 pb-0">
           {loading ? (
