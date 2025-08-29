@@ -16,7 +16,6 @@ import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { getAllCategories, postCategory } from "~/db/queries/category.queries";
 import { Button } from "../ui/button";
 import { Icon } from "../ui/icon";
-import ColorPickerCustom from "../base/color-picker-custom";
 import { Exercise, ExerciseType } from "~/db/schema/";
 import { Category } from "~/db/schema/";
 import {
@@ -30,6 +29,7 @@ import {
 } from "~/components/ui/select";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getAllExerciseType } from "~/db/queries/exercise_type.queries";
+import { postExercise } from "~/db/queries/exercise.queries";
 
 export function ExerciseForm() {
   const insets = useSafeAreaInsets();
@@ -76,29 +76,33 @@ export function ExerciseForm() {
   };
 
   const handleSubmit = async () => {
-    // setLoading(true);
-    //
-    // if (!category.name || !category.color) {
-    //   setShowAlert(true);
-    //   setLoading(false);
-    //   return;
-    // }
-    //
-    // // POST category into db
-    // const postSuccess = await postCategory(category);
-    // if (postSuccess) {
-    //   setShowAlert(false);
-    //   setLoading(false);
-    //   const router = useRouter();
-    //   router.navigate("/category");
-    //   return;
-    // } else {
-    //   // console.log("something happened");
-    // }
-    //
-    // setShowAlert(true);
-    // setLoading(false);
-    // return;
+    setLoading(true);
+
+    if (
+      !exercise.name ||
+      !exercise.description ||
+      !exercise.categoryId ||
+      !exercise.exerciseTypeId
+    ) {
+      setShowAlert(true);
+      setLoading(false);
+      return;
+    }
+
+    const postSuccess = await postExercise(exercise);
+    if (postSuccess) {
+      setShowAlert(false);
+      setLoading(false);
+      const router = useRouter();
+      router.navigate("/exercise");
+      return;
+    } else {
+      console.log("something happened");
+    }
+
+    setShowAlert(true);
+    setLoading(false);
+    return;
   };
 
   return (
@@ -242,7 +246,7 @@ export function ExerciseForm() {
       {showAlert && (
         <View className="w-full max-w-xl gap-4">
           <Alert variant="destructive" icon={AlertCircleIcon}>
-            <AlertTitle>Unable to create your category.</AlertTitle>
+            <AlertTitle>Unable to create exercise.</AlertTitle>
             <AlertDescription>
               Please verify the fields and try again.
             </AlertDescription>
@@ -252,6 +256,12 @@ export function ExerciseForm() {
               </Text>
               <Text role="listitem" className="text-sm text-red-500">
                 <Text className="web:pr-2">•</Text> Check description
+              </Text>
+              <Text role="listitem" className="text-sm text-red-500">
+                <Text className="web:pr-2">•</Text> Check category
+              </Text>
+              <Text role="listitem" className="text-sm text-red-500">
+                <Text className="web:pr-2">•</Text> Check type
               </Text>
             </View>
           </Alert>
