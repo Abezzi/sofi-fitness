@@ -2,6 +2,7 @@ import * as SQLite from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { category } from "../db/schema/category";
 import { eq } from "drizzle-orm";
+import { exercise_type } from "./schema/exercise_type";
 
 const expo = SQLite.openDatabaseSync("db.db", { enableChangeListener: true });
 const db = drizzle(expo);
@@ -23,7 +24,7 @@ export async function initializeDatabase() {
   try {
     // Use runAsync instead of execAsync for PRAGMA
     await expo.runAsync("PRAGMA foreign_keys = ON;");
-    console.log("Database initialized successfully.");
+    console.log("✅ Database initialized successfully.");
   } catch (error) {
     console.error("Error initializing database:", error);
     throw error; // Re-throw to ensure the error is visible in the app
@@ -37,5 +38,20 @@ export async function resetDatabase() {
     console.log("Database reset successfully.");
   } catch (error) {
     console.error("Error resetting database:", error);
+  }
+}
+
+export async function loadExerciseTypes() {
+  try {
+    await db
+      .insert(exercise_type)
+      .values([
+        { id: 1, name: "reps" },
+        { id: 2, name: "time" },
+      ])
+      .onConflictDoNothing({ target: exercise_type.id });
+    console.log("✅ Exercise types loaded successfully");
+  } catch (error) {
+    console.log("❌ Error loading exercise type: ", error);
   }
 }

@@ -5,6 +5,7 @@ import { drizzle } from "drizzle-orm/expo-sqlite";
 import {
   DarkTheme,
   DefaultTheme,
+  LocaleDirContext,
   Theme,
   ThemeProvider,
 } from "@react-navigation/native";
@@ -19,7 +20,11 @@ import { Suspense } from "react";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "~/drizzle/migrations";
 import { Text } from "~/components/ui/text";
-import { initializeDatabase, resetDatabase } from "~/db/logic";
+import {
+  initializeDatabase,
+  loadExerciseTypes,
+  resetDatabase,
+} from "~/db/logic";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 import MainStack from "~/navigator/main-stack";
 import { DATABASE_NAME, db, expoDb } from "~/db";
@@ -47,6 +52,7 @@ const usePlatformSpecificSetup = Platform.select({
 function DatabaseInitializer() {
   // resetDatabase(); // DEBUG: resets db
   initializeDatabase();
+  loadExerciseTypes();
   const { success, error } = useMigrations(db, migrations);
   useDrizzleStudio(expoDb);
 
@@ -114,4 +120,4 @@ function useSetAndroidNavigationBar() {
   }, []);
 }
 
-function noop() { }
+function noop() {}
