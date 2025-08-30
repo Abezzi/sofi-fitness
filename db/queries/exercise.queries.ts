@@ -59,3 +59,23 @@ export async function postExercise(exerciseToPost: Exercise): Promise<boolean> {
     throw false;
   }
 }
+
+export async function getAllExercisesByCategoryId(
+  categoryId: number,
+): Promise<Exercise[]> {
+  try {
+    const result = await db
+      .select()
+      .from(exercise)
+      .where(eq(exercise.categoryId, categoryId));
+
+    if (result.length === 0) {
+      return [];
+    }
+
+    return result.map(transformDbToExercise);
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
