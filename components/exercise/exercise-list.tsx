@@ -5,6 +5,13 @@ import { Category, Exercise } from "~/db/schema";
 import { Separator } from "../ui/separator";
 import { ExercisListHeader } from "./exercise-list-header";
 import { EllipsisVertical } from "lucide-react-native";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "../ui/dropdown-menu";
 
 type ExerciseListProps = {
   exercises: Exercise[];
@@ -19,15 +26,33 @@ export function ExerciseList({
 }: ExerciseListProps) {
   const { isDarkColorScheme } = useColorScheme();
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [dropdownVisible, setDropdownVisible] = useState<number | null>(null);
 
   const renderItem = ({ item }: { item: Exercise }) => {
     const isSelected = item.id === selectedId;
+    const isDropdownVisible = item.id === dropdownVisible;
+
+    function handleOptionsPress() {
+      setDropdownVisible(isDropdownVisible ? null : item.id);
+    }
+
+    function handleEditPress() {
+      console.log(`Edit exercise: ${item.name}`);
+      setDropdownVisible(null);
+      // logic here
+    }
+
+    function handleDeletePress() {
+      console.log(`Delete exercise: ${item.name}`);
+      setDropdownVisible(null);
+      // logic here
+    }
 
     return (
       <Pressable
         onPress={() => {
-          setSelectedId(item.id); // Update selected item
-          onExercisePress?.(item); // Call the provided callback
+          setSelectedId(item.id);
+          onExercisePress?.(item);
         }}
         style={({ pressed }) => [
           styles.itemContainer,
@@ -61,7 +86,41 @@ export function ExerciseList({
           >
             {item.name}
           </Text>
-          <EllipsisVertical />
+          <DropdownMenu
+            onOpenChange={(open: boolean) => {
+              setDropdownVisible(open ? item.id : null);
+            }}
+          >
+            <DropdownMenuTrigger asChild>
+              <Pressable
+                style={styles.iconPressable}
+                onPress={handleOptionsPress}
+              >
+                <EllipsisVertical
+                  color={isDarkColorScheme ? "#fff" : "#000"}
+                  size={24}
+                />
+              </Pressable>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              style={styles.dropdownMenu}
+              side="bottom"
+              align="end"
+              sideOffset={8}
+            >
+              <DropdownMenuItem onPress={handleEditPress}>
+                <Text style={{ color: isDarkColorScheme ? "#fff" : "#000" }}>
+                  Edit
+                </Text>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onPress={handleDeletePress}>
+                <Text style={{ color: isDarkColorScheme ? "#fff" : "#000" }}>
+                  Delete
+                </Text>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </View>
       </Pressable>
     );
@@ -98,5 +157,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  dropdownMenu: {
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    padding: 8,
+    minWidth: 120,
+    zIndex: 1000, // ensure dropdown appears above other elements
+  },
+  iconPressable: {
+    padding: 8, // larger touch area for the icon
   },
 });
